@@ -1,0 +1,49 @@
+.page {
+  padding: 8px 0;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.periodTabs {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.tab {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 14px;
+  color: #888;
+}
+
+.tabActive {
+  border-color: #ff7a45;
+  background-color: #fff3ef;
+  color: #ff7a45;
+  font-weight: bold;
+}
+
+.empty {
+  text-align: center;
+  color: #aaa;
+  margin-top: 60px;
+}
+
+.chartSection {
+  margin-bottom: 32px;
+}
+
+.chartTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #555;
+  margin-bottom: 12px;
+}

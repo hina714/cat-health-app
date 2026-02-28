@@ -1,0 +1,91 @@
+.page {
+  padding: 8px 0;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 24px;
+}
+
+.empty {
+  text-align: center;
+  color: #aaa;
+  margin-top: 60px;
+}
+
+.list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.card {
+  background-color: #fff;
+  border: 1px solid #eee;
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+}
+
+.deleteButton {
+  font-size: 12px;
+  color: #999;
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 4px 10px;
+}
+
+.deleteButton:active {
+  background-color: #fee;
+  color: #e53;
+  border-color: #e53;
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+}
+
+.stat {
+  font-size: 13px;
+  color: #ff7a45;
+  font-weight: 600;
+}
+
+.memo {
+  font-size: 14px;
+  color: #555;
+  line-height: 1.6;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag {
+  font-size: 12px;
+  padding: 3px 10px;
+  background-color: #fff3ef;
+  color: #ff7a45;
+  border-radius: 20px;
+  font-weight: 600;
+}
