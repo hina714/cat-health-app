@@ -168,14 +168,14 @@ export default function RecordPage() {
               onClick={() => handlePoopToggle(true)}
               className={`${styles.poopButton} ${form.pooped === true ? styles.poopDone : ''}`}
             >
-              💩 した
+               した
             </button>
             <button
               type="button"
               onClick={() => handlePoopToggle(false)}
               className={`${styles.poopButton} ${form.pooped === false ? styles.poopNotDone : ''}`}
             >
-              😟 してない
+               してない
             </button>
           </div>
         </div>

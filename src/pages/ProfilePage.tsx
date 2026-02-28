@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import styles from './ProfilePage.module.css'
+import PhotoCropModal from '../components/PhotoCropModal'
 
 type ProfileForm = {
   name: string
@@ -7,6 +8,7 @@ type ProfileForm = {
   breed: string
   sex: 'male' | 'female' | ''
   neutered: 'true' | 'false' | ''
+  photoUrl: string | null
 }
 
 const initialForm: ProfileForm = {
@@ -15,6 +17,7 @@ const initialForm: ProfileForm = {
   breed: '',
   sex: '',
   neutered: '',
+  photoUrl: null,
 }
 
 export default function ProfilePage() {
@@ -23,10 +26,28 @@ export default function ProfilePage() {
     return saved ? JSON.parse(saved) : initialForm
   })
   const [saved, setSaved] = useState(false)
+  const [cropSrc, setCropSrc] = useState<string | null>(null)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
+    setSaved(false)
+  }
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = () => {
+      setCropSrc(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const handleCropComplete = (croppedImage: string) => {
+    setForm(prev => ({ ...prev, photoUrl: croppedImage }))
+    setCropSrc(null)
     setSaved(false)
   }
 
@@ -38,9 +59,32 @@ export default function ProfilePage() {
 
   return (
     <div className={styles.page}>
+      {cropSrc && (
+        <PhotoCropModal
+          imageSrc={cropSrc}
+          onComplete={handleCropComplete}
+          onCancel={() => setCropSrc(null)}
+        />
+      )}
       <h1 className={styles.title}>プロフィール</h1>
 
       <form onSubmit={handleSubmit} className={styles.form}>
+        <div className={styles.photoField}>
+          <label className={styles.photoLabel} htmlFor="photo">
+            {form.photoUrl
+              ? <img src={form.photoUrl} alt="プロフィール写真" className={styles.photoImage} />
+              : <span className={styles.photoPlaceholder}>📷 写真を追加</span>
+            }
+          </label>
+          <input
+            id="photo"
+            type="file"
+            accept="image/*"
+            onChange={handlePhotoChange}
+            className={styles.photoInput}
+          />
+        </div>
+
         <div className={styles.field}>
           <label className={styles.label} htmlFor="name">名前</label>
           <input
