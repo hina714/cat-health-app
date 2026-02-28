@@ -1,0 +1,34 @@
+.nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  background-color: #fff;
+  border-top: 1px solid #e0e0e0;
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+.item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 0;
+  text-decoration: none;
+  color: #888;
+  gap: 2px;
+}
+
+.item.active {
+  color: #ff7a45;
+}
+
+.icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.label {
+  font-size: 10px;
+}

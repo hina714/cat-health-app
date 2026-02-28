@@ -1,0 +1,11 @@
+.layout {
+  max-width: 480px;
+  min-height: 100dvh;
+  margin: 0 auto;
+  background-color: #fff;
+  position: relative;
+}
+
+.main {
+  padding: 16px 16px calc(60px + env(safe-area-inset-bottom));
+}

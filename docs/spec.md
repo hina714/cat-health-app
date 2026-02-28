@@ -121,7 +121,7 @@ type DailyRecord = {
 | ビルドツール | Vite |
 | ルーティング | React Router v7 |
 | グラフ | Recharts |
-| スタイル | Tailwind CSS |
+| スタイル | CSS（CSS Modules） |
 | 状態管理 | React Context + useContext（localStorage永続化） |
 
 ---
