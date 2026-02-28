@@ -61,6 +61,57 @@
   border-color: #ff7a45;
 }
 
+.timeOfDayGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.timeOfDayButton {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 15px;
+  color: #888;
+}
+
+.timeOfDayActive {
+  border-color: #ff7a45;
+  background-color: #fff3ef;
+  color: #ff7a45;
+  font-weight: bold;
+}
+
+.poopGroup {
+  display: flex;
+  gap: 8px;
+}
+
+.poopButton {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fff;
+  font-size: 15px;
+  color: #888;
+}
+
+.poopDone {
+  border-color: #8d6748;
+  background-color: #f5ede8;
+  color: #8d6748;
+  font-weight: bold;
+}
+
+.poopNotDone {
+  border-color: #aaa;
+  background-color: #f5f5f5;
+  color: #555;
+  font-weight: bold;
+}
+
 .tags {
   display: flex;
   flex-wrap: wrap;

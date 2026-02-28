@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import styles from './RecordPage.module.css'
 
+type TimeOfDay = 'morning' | 'evening'
+
 type RecordForm = {
   date: string
+  timeOfDay: TimeOfDay
   weight: string
   foodAmount: string
+  pooped: boolean | null
   memo: string
   tags: string[]
 }
@@ -15,8 +19,10 @@ const today = () => new Date().toISOString().split('T')[0]
 
 const initialForm = (): RecordForm => ({
   date: today(),
+  timeOfDay: 'morning',
   weight: '',
   foodAmount: '',
+  pooped: null,
   memo: '',
   tags: [],
 })
@@ -28,6 +34,11 @@ export default function RecordPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
+    setSaved(false)
+  }
+
+  const handlePoopToggle = (value: boolean) => {
+    setForm(prev => ({ ...prev, pooped: prev.pooped === value ? null : value }))
     setSaved(false)
   }
 
@@ -50,13 +61,22 @@ export default function RecordPage() {
     const newRecord = {
       id: crypto.randomUUID(),
       date: form.date,
+      timeOfDay: form.timeOfDay,
       weight: form.weight ? parseFloat(form.weight) : null,
       foodAmount: form.foodAmount ? parseInt(form.foodAmount) : null,
+      pooped: form.pooped,
       memo: form.memo,
       tags: form.tags,
     }
 
-    const updated = [newRecord, ...records.filter((r: { date: string }) => r.date !== form.date)]
+    // 同じ日付・同じ時間帯の記録は上書き
+    const updated = [
+      newRecord,
+      ...records.filter(
+        (r: { date: string; timeOfDay: TimeOfDay }) =>
+          !(r.date === form.date && r.timeOfDay === form.timeOfDay)
+      ),
+    ]
     localStorage.setItem('daily_records', JSON.stringify(updated))
     setSaved(true)
   }
@@ -76,6 +96,26 @@ export default function RecordPage() {
             onChange={handleChange}
             className={styles.input}
           />
+        </div>
+
+        <div className={styles.field}>
+          <span className={styles.label}>時間帯</span>
+          <div className={styles.timeOfDayGroup}>
+            <button
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, timeOfDay: 'morning' }))}
+              className={`${styles.timeOfDayButton} ${form.timeOfDay === 'morning' ? styles.timeOfDayActive : ''}`}
+            >
+              🌅 朝
+            </button>
+            <button
+              type="button"
+              onClick={() => setForm(prev => ({ ...prev, timeOfDay: 'evening' }))}
+              className={`${styles.timeOfDayButton} ${form.timeOfDay === 'evening' ? styles.timeOfDayActive : ''}`}
+            >
+              🌙 夜
+            </button>
+          </div>
         </div>
 
         <div className={styles.row}>
@@ -107,6 +147,26 @@ export default function RecordPage() {
               placeholder="80"
               className={styles.input}
             />
+          </div>
+        </div>
+
+        <div className={styles.field}>
+          <span className={styles.label}>うんち</span>
+          <div className={styles.poopGroup}>
+            <button
+              type="button"
+              onClick={() => handlePoopToggle(true)}
+              className={`${styles.poopButton} ${form.pooped === true ? styles.poopDone : ''}`}
+            >
+               した
+            </button>
+            <button
+              type="button"
+              onClick={() => handlePoopToggle(false)}
+              className={`${styles.poopButton} ${form.pooped === false ? styles.poopNotDone : ''}`}
+            >
+               してない
+            </button>
           </div>
         </div>
 

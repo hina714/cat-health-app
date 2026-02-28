@@ -4,11 +4,15 @@ import styles from './MemoPage.module.css'
 type DailyRecord = {
   id: string
   date: string
+  timeOfDay: 'morning' | 'evening'
   weight: number | null
   foodAmount: number | null
+  pooped: boolean | null
   memo: string
   tags: string[]
 }
+
+const TIME_LABEL = { morning: '🌅 朝', evening: '🌙 夜' }
 
 const loadRecords = (): DailyRecord[] => {
   const saved = localStorage.getItem('daily_records')
@@ -41,7 +45,14 @@ export default function MemoPage() {
         {records.map(record => (
           <li key={record.id} className={styles.card}>
             <div className={styles.cardHeader}>
-              <span className={styles.date}>{record.date}</span>
+              <div className={styles.cardMeta}>
+                <span className={styles.date}>{record.date}</span>
+                {record.timeOfDay && (
+                  <span className={styles.timeOfDay}>
+                    {TIME_LABEL[record.timeOfDay]}
+                  </span>
+                )}
+              </div>
               <button
                 className={styles.deleteButton}
                 onClick={() => handleDelete(record.id)}
@@ -56,6 +67,11 @@ export default function MemoPage() {
               )}
               {record.foodAmount !== null && (
                 <span className={styles.stat}>食事 {record.foodAmount} g</span>
+              )}
+              {record.pooped !== null && (
+                <span className={styles.stat}>
+                  {record.pooped ? 'した' : 'してない'}
+                </span>
               )}
             </div>
 
