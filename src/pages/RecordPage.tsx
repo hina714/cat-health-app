@@ -1,13 +1,21 @@
 import { useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import styles from './RecordPage.module.css'
-
-type TimeOfDay = 'morning' | 'evening'
 
 type RecordForm = {
   date: string
-  timeOfDay: TimeOfDay
   weight: string
   foodAmount: string
+  pooped: boolean | null
+  memo: string
+  tags: string[]
+}
+
+type SavedRecord = {
+  id: string
+  date: string
+  weight: number | null
+  foodAmount: number | null
   pooped: boolean | null
   memo: string
   tags: string[]
@@ -23,18 +31,35 @@ const today = () => {
   return `${y}-${m}-${day}`
 }
 
-const initialForm = (): RecordForm => ({
-  date: today(),
-  timeOfDay: 'morning',
-  weight: '',
-  foodAmount: '',
-  pooped: null,
-  memo: '',
-  tags: [],
-})
-
 export default function RecordPage() {
-  const [form, setForm] = useState<RecordForm>(initialForm)
+  const location = useLocation()
+  const navigate = useNavigate()
+
+  // MemoPage から編集で遷移してきた場合、record が渡される
+  const editRecord: SavedRecord | undefined = location.state?.record
+  const isEditing = !!editRecord
+
+  const [form, setForm] = useState<RecordForm>(() => {
+    if (editRecord) {
+      return {
+        date: editRecord.date,
+        weight: editRecord.weight?.toString() ?? '',
+        foodAmount: editRecord.foodAmount?.toString() ?? '',
+        pooped: editRecord.pooped,
+        memo: editRecord.memo,
+        tags: editRecord.tags,
+      }
+    }
+    return {
+      date: today(),
+      weight: '',
+      foodAmount: '',
+      pooped: null,
+      memo: '',
+      tags: [],
+    }
+  })
+
   const [saved, setSaved] = useState(false)
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -62,12 +87,11 @@ export default function RecordPage() {
     e.preventDefault()
 
     const existing = localStorage.getItem('daily_records')
-    const records = existing ? JSON.parse(existing) : []
+    const records: SavedRecord[] = existing ? JSON.parse(existing) : []
 
-    const newRecord = {
-      id: crypto.randomUUID(),
+    const record: SavedRecord = {
+      id: editRecord?.id ?? crypto.randomUUID(),
       date: form.date,
-      timeOfDay: form.timeOfDay,
       weight: form.weight ? parseFloat(form.weight) : null,
       foodAmount: form.foodAmount ? parseInt(form.foodAmount) : null,
       pooped: form.pooped,
@@ -75,21 +99,21 @@ export default function RecordPage() {
       tags: form.tags,
     }
 
-    // 同じ日付・同じ時間帯の記録は上書き
-    const updated = [
-      newRecord,
-      ...records.filter(
-        (r: { date: string; timeOfDay: TimeOfDay }) =>
-          !(r.date === form.date && r.timeOfDay === form.timeOfDay)
-      ),
-    ]
+    const updated = isEditing
+      ? records.map(r => r.id === record.id ? record : r)  // 編集: 既存レコードを差し替え
+      : [record, ...records.filter(r => r.date !== form.date)]  // 新規: 同日を上書き
+
     localStorage.setItem('daily_records', JSON.stringify(updated))
     setSaved(true)
+
+    if (isEditing) {
+      setTimeout(() => navigate('/memos'), 800)
+    }
   }
 
   return (
     <div className={styles.page}>
-      <h1 className={styles.title}>記録</h1>
+      <h1 className={styles.title}>{isEditing ? '記録を編集' : '記録'}</h1>
 
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.field}>
@@ -102,26 +126,6 @@ export default function RecordPage() {
             onChange={handleChange}
             className={styles.input}
           />
-        </div>
-
-        <div className={styles.field}>
-          <span className={styles.label}>時間帯</span>
-          <div className={styles.timeOfDayGroup}>
-            <button
-              type="button"
-              onClick={() => setForm(prev => ({ ...prev, timeOfDay: 'morning' }))}
-              className={`${styles.timeOfDayButton} ${form.timeOfDay === 'morning' ? styles.timeOfDayActive : ''}`}
-            >
-               朝
-            </button>
-            <button
-              type="button"
-              onClick={() => setForm(prev => ({ ...prev, timeOfDay: 'evening' }))}
-              className={`${styles.timeOfDayButton} ${form.timeOfDay === 'evening' ? styles.timeOfDayActive : ''}`}
-            >
-               夜
-            </button>
-          </div>
         </div>
 
         <div className={styles.row}>
@@ -164,14 +168,14 @@ export default function RecordPage() {
               onClick={() => handlePoopToggle(true)}
               className={`${styles.poopButton} ${form.pooped === true ? styles.poopDone : ''}`}
             >
-               した
+              💩 した
             </button>
             <button
               type="button"
               onClick={() => handlePoopToggle(false)}
               className={`${styles.poopButton} ${form.pooped === false ? styles.poopNotDone : ''}`}
             >
-               してない
+              😟 してない
             </button>
           </div>
         </div>
@@ -205,9 +209,15 @@ export default function RecordPage() {
           </div>
         </div>
 
-        <button type="submit" className={styles.button}>保存する</button>
+        <button type="submit" className={styles.button}>
+          {isEditing ? '更新する' : '保存する'}
+        </button>
 
-        {saved && <p className={styles.savedMessage}>保存しました</p>}
+        {saved && (
+          <p className={styles.savedMessage}>
+            {isEditing ? '更新しました' : '保存しました'}
+          </p>
+        )}
       </form>
     </div>
   )

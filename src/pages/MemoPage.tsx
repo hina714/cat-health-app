@@ -1,10 +1,10 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import styles from './MemoPage.module.css'
 
 type DailyRecord = {
   id: string
   date: string
-  timeOfDay: 'morning' | 'evening'
   weight: number | null
   foodAmount: number | null
   pooped: boolean | null
@@ -12,15 +12,18 @@ type DailyRecord = {
   tags: string[]
 }
 
-const TIME_LABEL = { morning: '🌅 朝', evening: '🌙 夜' }
-
 const loadRecords = (): DailyRecord[] => {
   const saved = localStorage.getItem('daily_records')
   return saved ? JSON.parse(saved) : []
 }
 
 export default function MemoPage() {
+  const navigate = useNavigate()
   const [records, setRecords] = useState<DailyRecord[]>(loadRecords)
+
+  const handleEdit = (record: DailyRecord) => {
+    navigate('/record', { state: { record } })
+  }
 
   const handleDelete = (id: string) => {
     const updated = records.filter(r => r.id !== id)
@@ -45,20 +48,21 @@ export default function MemoPage() {
         {records.map(record => (
           <li key={record.id} className={styles.card}>
             <div className={styles.cardHeader}>
-              <div className={styles.cardMeta}>
-                <span className={styles.date}>{record.date}</span>
-                {record.timeOfDay && (
-                  <span className={styles.timeOfDay}>
-                    {TIME_LABEL[record.timeOfDay]}
-                  </span>
-                )}
+              <span className={styles.date}>{record.date}</span>
+              <div className={styles.actions}>
+                <button
+                  className={styles.editButton}
+                  onClick={() => handleEdit(record)}
+                >
+                  編集
+                </button>
+                <button
+                  className={styles.deleteButton}
+                  onClick={() => handleDelete(record.id)}
+                >
+                  削除
+                </button>
               </div>
-              <button
-                className={styles.deleteButton}
-                onClick={() => handleDelete(record.id)}
-              >
-                削除
-              </button>
             </div>
 
             <div className={styles.stats}>
@@ -70,7 +74,7 @@ export default function MemoPage() {
               )}
               {record.pooped !== null && (
                 <span className={styles.stat}>
-                  {record.pooped ? 'した' : 'してない'}
+                  {record.pooped ? 'うんち：した' : 'うんち:してない'}
                 </span>
               )}
             </div>

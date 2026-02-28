@@ -14,7 +14,6 @@ import styles from './GraphPage.module.css'
 type DailyRecord = {
   id: string
   date: string
-  timeOfDay: 'morning' | 'evening'
   weight: number | null
   foodAmount: number | null
   memo: string
@@ -61,9 +60,7 @@ export default function GraphPage() {
   const filtered = filterByPeriod(sorted, period)
 
   const data = filtered.map(r => ({
-    date: r.timeOfDay === 'evening'
-      ? `${r.date.slice(5)} 夜`
-      : `${r.date.slice(5)} 朝`,
+    date: r.date.slice(5),
     weight: r.weight,
     foodAmount: r.foodAmount,
   }))

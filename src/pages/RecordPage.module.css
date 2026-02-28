@@ -61,28 +61,6 @@
   border-color: #ff7a45;
 }
 
-.timeOfDayGroup {
-  display: flex;
-  gap: 8px;
-}
-
-.timeOfDayButton {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  background-color: #fff;
-  font-size: 15px;
-  color: #888;
-}
-
-.timeOfDayActive {
-  border-color: #ff7a45;
-  background-color: #fff3ef;
-  color: #ff7a45;
-  font-weight: bold;
-}
-
 .poopGroup {
   display: flex;
   gap: 8px;
