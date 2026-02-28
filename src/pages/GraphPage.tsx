@@ -14,6 +14,7 @@ import styles from './GraphPage.module.css'
 type DailyRecord = {
   id: string
   date: string
+  timeOfDay: 'morning' | 'evening'
   weight: number | null
   foodAmount: number | null
   memo: string
@@ -33,6 +34,13 @@ const loadRecords = (): DailyRecord[] => {
   return saved ? JSON.parse(saved) : []
 }
 
+const toLocalDateStr = (date: Date): string => {
+  const y = date.getFullYear()
+  const m = String(date.getMonth() + 1).padStart(2, '0')
+  const d = String(date.getDate()).padStart(2, '0')
+  return `${y}-${m}-${d}`
+}
+
 const filterByPeriod = (records: DailyRecord[], period: Period): DailyRecord[] => {
   if (period === 'all') return records
 
@@ -40,8 +48,9 @@ const filterByPeriod = (records: DailyRecord[], period: Period): DailyRecord[] =
   const days = period === 'week' ? 7 : 30
   const from = new Date(now)
   from.setDate(now.getDate() - days)
+  const fromStr = toLocalDateStr(from)
 
-  return records.filter(r => new Date(r.date) >= from)
+  return records.filter(r => r.date >= fromStr)
 }
 
 export default function GraphPage() {
@@ -52,12 +61,14 @@ export default function GraphPage() {
   const filtered = filterByPeriod(sorted, period)
 
   const data = filtered.map(r => ({
-    date: r.date.slice(5),  // "2026-02-28" → "02-28"
+    date: r.timeOfDay === 'evening'
+      ? `${r.date.slice(5)} 夜`
+      : `${r.date.slice(5)} 朝`,
     weight: r.weight,
     foodAmount: r.foodAmount,
   }))
 
-  const hasData = data.length > 0
+  const hasData = data.some(d => d.weight !== null || d.foodAmount !== null)
 
   return (
     <div className={styles.page}>
@@ -75,8 +86,10 @@ export default function GraphPage() {
         ))}
       </div>
 
-      {!hasData ? (
+      {data.length === 0 ? (
         <p className={styles.empty}>この期間の記録がありません</p>
+      ) : !hasData ? (
+        <p className={styles.empty}>体重・食事量が入力されていません</p>
       ) : (
         <>
           <div className={styles.chartSection}>

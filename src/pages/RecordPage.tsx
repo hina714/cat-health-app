@@ -15,7 +15,13 @@ type RecordForm = {
 
 const SYMPTOM_TAGS = ['嘔吐', '軟便', '下痢', '食欲不振', '元気がない', '飲水量増加', 'くしゃみ', '咳']
 
-const today = () => new Date().toISOString().split('T')[0]
+const today = () => {
+  const d = new Date()
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
 
 const initialForm = (): RecordForm => ({
   date: today(),
@@ -106,14 +112,14 @@ export default function RecordPage() {
               onClick={() => setForm(prev => ({ ...prev, timeOfDay: 'morning' }))}
               className={`${styles.timeOfDayButton} ${form.timeOfDay === 'morning' ? styles.timeOfDayActive : ''}`}
             >
-              🌅 朝
+               朝
             </button>
             <button
               type="button"
               onClick={() => setForm(prev => ({ ...prev, timeOfDay: 'evening' }))}
               className={`${styles.timeOfDayButton} ${form.timeOfDay === 'evening' ? styles.timeOfDayActive : ''}`}
             >
-              🌙 夜
+               夜
             </button>
           </div>
         </div>
