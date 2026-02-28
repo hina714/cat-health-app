@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import styles from './RecordPage.module.css'
+import WheelPicker from '../components/WheelPicker'
 
 type RecordForm = {
   date: string
@@ -22,6 +23,16 @@ type SavedRecord = {
 }
 
 const SYMPTOM_TAGS = ['嘔吐', '軟便', '下痢', '食欲不振', '元気がない', '飲水量増加', 'くしゃみ', '咳']
+
+// 1.0〜10.0kg を 0.1kg 刻み
+const WEIGHT_OPTIONS = Array.from({ length: 91 }, (_, i) =>
+  ((i + 10) / 10).toFixed(1)
+)
+
+// 50〜140g を 5g 刻み
+const FOOD_OPTIONS = Array.from({ length: 19 }, (_, i) =>
+  String(50 + i * 5)
+)
 
 const today = () => {
   const d = new Date()
@@ -62,7 +73,7 @@ export default function RecordPage() {
 
   const [saved, setSaved] = useState(false)
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target
     setForm(prev => ({ ...prev, [name]: value }))
     setSaved(false)
@@ -130,32 +141,21 @@ export default function RecordPage() {
 
         <div className={styles.row}>
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="weight">体重（kg）</label>
-            <input
-              id="weight"
-              name="weight"
-              type="number"
-              step="0.01"
-              min="0"
-              value={form.weight}
-              onChange={handleChange}
-              placeholder="4.20"
-              className={styles.input}
+            <span className={styles.label}>体重（kg）</span>
+            <WheelPicker
+              options={WEIGHT_OPTIONS}
+              value={form.weight || WEIGHT_OPTIONS[39]}
+              onChange={v => setForm(prev => ({ ...prev, weight: v }))}
             />
           </div>
 
           <div className={styles.field}>
-            <label className={styles.label} htmlFor="foodAmount">食事量（g）</label>
-            <input
-              id="foodAmount"
-              name="foodAmount"
-              type="number"
-              step="1"
-              min="0"
-              value={form.foodAmount}
-              onChange={handleChange}
-              placeholder="80"
-              className={styles.input}
+            <span className={styles.label}>食事量（g）</span>
+            <WheelPicker
+              options={FOOD_OPTIONS}
+              value={form.foodAmount || FOOD_OPTIONS[6]}
+              onChange={v => setForm(prev => ({ ...prev, foodAmount: v }))}
+              unit="g"
             />
           </div>
         </div>
